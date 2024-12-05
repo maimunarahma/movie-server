@@ -8,7 +8,7 @@ const { MongoClient, ServerApiVersion, ObjectId } =  require('mongodb');
 //middleware
 app.use(cors());
 app.use(express.json());
-console.log(process.env.DB_USER)
+// console.log(process.env.DB_USER)
 app.get('/',(req,res)=>{
     res.send('movie server  ');
 
