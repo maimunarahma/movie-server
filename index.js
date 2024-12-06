@@ -32,10 +32,6 @@ async function run() {
     const database=client.db('MovieDB');
     const Added=database.collection('addMovies');
 
-    // const database = client.db('coffeeDB');
-    // const coffeeCollection = database.collection('coffee');
-
-    // const userCollection = client.db('coffeeDB').collection('users');
 
 
 
@@ -43,6 +39,15 @@ async function run() {
     app.get('/addMovies',async(req,res)=>{
       const cursor=Added.find();
       const result= await cursor.toArray();
+      res.send(result);
+
+    })
+    app.get('/featured',async(req,res)=>{
+      const cursor=Added.find();
+      const result = await Added.find().sort({ rating: -1 }).limit(6).toArray();
+      // Sort descending (highest values first)
+      // Limit to top 3 results
+    
       res.send(result);
 
     })
