@@ -82,6 +82,31 @@ async function run() {
       res.send(result)
     })
 
+    app.post('/favourites/:email', async (req, res) => {
+      const email = req.params.email;
+      const movie = req.body; 
+    console.log('favoirite',email, movie)
+
+        const query = { email: email };
+        const update = {
+          $addToSet: { movies: movie },
+        };
+        const options = { upsert: true };
+    
+        const result = await Added.updateOne(query, update, options);
+        res.send(result);
+    
+    });
+    app.get('/favourites/:email', async (req, res) => {
+      const email = req.params.email;
+    
+        const query = { email: email }; 
+        const userFavorites = await Added.findOne(query);    
+        res.send(userFavorites.movies);
+    
+    });
+    
+    
    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
