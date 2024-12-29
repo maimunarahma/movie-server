@@ -134,31 +134,40 @@ app.delete('/favourites/:email/:id', async (req, res) => {
 });
 
 
-    app.put('/update/:id', async (req, res) => {
-    
-          const id = req.params.id;
-          const movie = req.body;
-  
-          console.log("Received ID:", id);
-          console.log("Received Data:", movie);
-  
-          const filter = { _id: new ObjectId(id) };
-          const option = { upsert: true };
-          const updateUser = {
-              $set: {
-                  poster: movie.poster,
-                  title: movie.title,
-                  rating: movie.rating,
-                  overview: movie.overview,
-              },
-          };
-  
-          const result = await Added.updateOne(filter, updateUser, option);
-          console.log("MongoDB Update Result:", result);
-          res.send(result);
-   
-  });
-  
+app.patch('/update/:id', async (req, res) => {
+  const id = req.params.id;
+  const movie = req.body;
+
+  console.log("Received ID:", id); // Ensure ID is being sent
+  console.log("Received Data:", movie); // Ensure all fields are being received
+
+  if (!id || !movie) {
+      return res.status(400).send({ error: "Invalid request data" });
+  }
+
+  const filter = { _id: new ObjectId(id) };
+  const updateUser = {
+      $set: {
+          poster: movie.poster,
+          title: movie.title,
+          rating: movie.rating,
+          overview: movie.overview,
+      },
+  };
+
+  try {
+      const result = await Added.updateOne(filter, updateUser, { upsert: false });
+      console.log("MongoDB Update Result:", result); // Log the update result
+      if (result.matchedCount === 0) {
+          return res.status(404).send({ error: "Movie not found" });
+      }
+      res.send(result);
+  } catch (error) {
+      console.error("Error updating movie:", error);
+      res.status(500).send({ error: "Internal server error" });
+  }
+});
+
    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
